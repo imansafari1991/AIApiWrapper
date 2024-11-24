@@ -1,0 +1,6 @@
+@AIApiWrapper_HostAddress = http://localhost:5232
+
+GET {{AIApiWrapper_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
