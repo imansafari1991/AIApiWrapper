@@ -76,7 +76,7 @@ namespace AIApiWrapper
     }
     public class AIService
     {
-        private readonly string _apiKey = "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";
+        private readonly string _apiKey = "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";
 
         public async Task<string> GetChatGptResponse(string prompt)
         {
