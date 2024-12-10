@@ -54,17 +54,18 @@ namespace AIApiWrapper
                 return await aiService.GetChatGptResponse(prompt);
             })
             .WithName("CallGPT");
-            app.MapPost("/ElevenLabs/TextToSpeech", async (string prompt, decimal stability = 0.5m,
+            app.MapPost("/ElevenLabs/TextToSpeech", async (string voiceId,string prompt, decimal stability = 0.5m,
                 decimal similarityBoost = 0.5m,
                 decimal style = 0.5m,
-                string voice= "9BWtsMINqrJLrRacOk9x"
+                string voice= "9BWtsMINqrJLrRacOk9x",
+                string apiKey= "sk_cab967f249e7c30dd24a4bf85de5e47d54009081e69f5a5e"
                 ) =>
             {
                 var aiService = new AIService();
                 
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "output_audio.mp3");
 
-                await aiService.ElevenLabsTextToSpeech(prompt,"output_audio.mp3", stability,similarityBoost,style);
+                await aiService.ElevenLabsTextToSpeech(voiceId,apiKey,prompt,"output_audio.mp3", stability,similarityBoost,style);
                 var fileBytes = System.IO.File.ReadAllBytes(filePath);
                 return Results.File(fileBytes, "audio/mpeg", "output_audio.mp3");
 
@@ -111,25 +112,26 @@ namespace AIApiWrapper
             }
         }
 
-        public async Task ElevenLabsTextToSpeech(string prompt,string fileName,decimal stability ,
+        public async Task ElevenLabsTextToSpeech(string voiceId,string apiKey, string prompt,string fileName,decimal stability ,
                 decimal similarityBoost ,
                 decimal style )
         {
-            var client = new RestClient("https://api.elevenlabs.io/v1/text-to-speech/9BWtsMINqrJLrRacOk9x");
+            var client = new RestClient($"https://api.elevenlabs.io/v1/text-to-speech/{voiceId}");
             var request = new RestRequest("",Method.Post);
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("xi-api-key", "sk_cab967f249e7c30dd24a4bf85de5e47d54009081e69f5a5e");
+            request.AddHeader("xi-api-key", apiKey);
             request.AddJsonBody(new
             {
                 text = prompt,
                 model_id = "eleven_turbo_v2_5",
-                language_code = "en",
+                // language_code = "en",
+
                 voice_settings = new
                 {
                     stability = stability,
                     similarity_boost = similarityBoost,
                     style = style,
-                    use_speaker_boost = true
+                    use_speaker_boost = false
                 },
                 seed = 123,
                 use_pvc_as_ivc = true,
